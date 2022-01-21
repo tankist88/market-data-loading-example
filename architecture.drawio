@@ -1,0 +1,79 @@
+<mxfile host="app.diagrams.net" modified="2022-01-21T09:32:27.836Z" agent="5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.2 Safari/605.1.15" etag="VquPqiIk6Av8N6TJEJXm" version="16.4.3" type="github">
+  <diagram id="M6eJ7rNvC9evyglTSuwN" name="Page-1">
+    <mxGraphModel dx="1298" dy="755" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="4ID-0AfamHI-X3ZOXnaU-17" value="Kafka Cluster" style="verticalAlign=top;align=left;spacingTop=8;spacingLeft=2;spacingRight=12;shape=cube;size=10;direction=south;fontStyle=4;html=1;" parent="1" vertex="1">
+          <mxGeometry x="380" y="40" width="260" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="4ID-0AfamHI-X3ZOXnaU-10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="4ID-0AfamHI-X3ZOXnaU-1" target="4ID-0AfamHI-X3ZOXnaU-7" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="4ID-0AfamHI-X3ZOXnaU-16" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="4ID-0AfamHI-X3ZOXnaU-1" target="4ID-0AfamHI-X3ZOXnaU-3" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="4ID-0AfamHI-X3ZOXnaU-1" value="«Scala App»&lt;br&gt;&lt;b&gt;Streaming Emulator&lt;/b&gt;" style="html=1;dropTarget=0;" parent="1" vertex="1">
+          <mxGeometry x="40" y="80" width="280" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="4ID-0AfamHI-X3ZOXnaU-2" value="" style="shape=module;jettyWidth=8;jettyHeight=4;" parent="4ID-0AfamHI-X3ZOXnaU-1" vertex="1">
+          <mxGeometry x="1" width="20" height="20" relative="1" as="geometry">
+            <mxPoint x="-27" y="7" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="4ID-0AfamHI-X3ZOXnaU-18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="4ID-0AfamHI-X3ZOXnaU-3" target="4ID-0AfamHI-X3ZOXnaU-11" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="4ID-0AfamHI-X3ZOXnaU-3" value="«Kafka Topic»&lt;br&gt;&lt;b&gt;StockData&lt;/b&gt;" style="html=1;dropTarget=0;" parent="1" vertex="1">
+          <mxGeometry x="400" y="80" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="4ID-0AfamHI-X3ZOXnaU-4" value="" style="shape=module;jettyWidth=8;jettyHeight=4;" parent="4ID-0AfamHI-X3ZOXnaU-3" vertex="1">
+          <mxGeometry x="1" width="20" height="20" relative="1" as="geometry">
+            <mxPoint x="-27" y="7" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="4ID-0AfamHI-X3ZOXnaU-7" value="«CSV File»&lt;br&gt;&lt;b&gt;trades_moex_stock_shares_2021_09.csv&lt;/b&gt;" style="html=1;dropTarget=0;" parent="1" vertex="1">
+          <mxGeometry x="40" y="200" width="280" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="4ID-0AfamHI-X3ZOXnaU-8" value="" style="shape=module;jettyWidth=8;jettyHeight=4;" parent="4ID-0AfamHI-X3ZOXnaU-7" vertex="1">
+          <mxGeometry x="1" width="20" height="20" relative="1" as="geometry">
+            <mxPoint x="-27" y="7" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="4ID-0AfamHI-X3ZOXnaU-22" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="4ID-0AfamHI-X3ZOXnaU-11" target="4ID-0AfamHI-X3ZOXnaU-20" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="4ID-0AfamHI-X3ZOXnaU-11" value="«Spark Streaming App»&lt;br&gt;&lt;b&gt;stock-data-stream&lt;/b&gt;" style="html=1;dropTarget=0;" parent="1" vertex="1">
+          <mxGeometry x="680" y="80" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="4ID-0AfamHI-X3ZOXnaU-12" value="" style="shape=module;jettyWidth=8;jettyHeight=4;" parent="4ID-0AfamHI-X3ZOXnaU-11" vertex="1">
+          <mxGeometry x="1" width="20" height="20" relative="1" as="geometry">
+            <mxPoint x="-27" y="7" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="4ID-0AfamHI-X3ZOXnaU-19" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="4ID-0AfamHI-X3ZOXnaU-13" target="4ID-0AfamHI-X3ZOXnaU-7" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="4ID-0AfamHI-X3ZOXnaU-23" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" parent="1" source="4ID-0AfamHI-X3ZOXnaU-13" target="4ID-0AfamHI-X3ZOXnaU-20" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="4ID-0AfamHI-X3ZOXnaU-13" value="«Spark App»&lt;br&gt;&lt;b&gt;stock-data-batch&lt;/b&gt;" style="html=1;dropTarget=0;" parent="1" vertex="1">
+          <mxGeometry x="680" y="200" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="4ID-0AfamHI-X3ZOXnaU-14" value="" style="shape=module;jettyWidth=8;jettyHeight=4;" parent="4ID-0AfamHI-X3ZOXnaU-13" vertex="1">
+          <mxGeometry x="1" width="20" height="20" relative="1" as="geometry">
+            <mxPoint x="-27" y="7" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="4ID-0AfamHI-X3ZOXnaU-20" value="«Database»&lt;br&gt;&lt;b&gt;Serving Layer&lt;/b&gt;" style="html=1;dropTarget=0;" parent="1" vertex="1">
+          <mxGeometry x="920" y="140" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="4ID-0AfamHI-X3ZOXnaU-21" value="" style="shape=module;jettyWidth=8;jettyHeight=4;" parent="4ID-0AfamHI-X3ZOXnaU-20" vertex="1">
+          <mxGeometry x="1" width="20" height="20" relative="1" as="geometry">
+            <mxPoint x="-27" y="7" as="offset" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
