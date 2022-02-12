@@ -1,0 +1,65 @@
+version: "3"
+services:
+  zookeeper:
+    image: 'bitnami/zookeeper:latest'
+    restart: always
+    ports:
+      - '2181:2181'
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+  kafka:
+    image: 'bitnami/kafka:latest'
+    restart: always
+    ports:
+      - '9092:9092'
+    environment:
+      - KAFKA_BROKER_ID=1
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://127.0.0.1:9092
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+      - ALLOW_PLAINTEXT_LISTENER=yes
+    depends_on:
+      - zookeeper
+  postgresql-tradesdb:
+    image: 'bitnami/postgresql:latest'
+    environment:
+      - POSTGRESQL_USERNAME=trades_user
+      - POSTGRESQL_PASSWORD=password123
+      - POSTGRESQL_DATABASE=tradesdb
+      - POSTGRESQL_POSTGRES_PASSWORD=password123
+  postgresql-servingdb:
+    image: 'bitnami/postgresql:latest'
+    restart: always
+    environment:
+      - POSTGRESQL_USERNAME=serving_user
+      - POSTGRESQL_PASSWORD=password123
+      - POSTGRESQL_DATABASE=servingdb
+      - POSTGRESQL_POSTGRES_PASSWORD=password123
+
+  grafana:
+    image: 'grafana/grafana'
+    restart: always
+    ports:
+      - '3000:3000'
+    volumes:
+      - grafana-volume:/var/lib/grafana
+  influxdb:
+    image: 'influxdb'
+    restart: always
+    ports:
+      - '8086:8086'
+    environment:
+      - INFLUXDB_DB=market_data_load_monitoring
+      - INFLUXDB_USER=market_monitoring
+      - INFLUXDB_USER_PASSWORD=password123
+      - INFLUXDB_ADMIN_ENABLED=true
+      - INFLUXDB_ADMIN_USER=admin
+      - INFLUXDB_ADMIN_PASSWORD=admin
+    volumes:
+      - influxdb-volume:/var/lib/influxdb
+
+volumes:
+  grafana-volume:
+    external: true
+  influxdb-volume:
+    external: true
