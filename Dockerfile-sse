@@ -1,0 +1,5 @@
+FROM openjdk:11
+RUN mkdir /opt/app
+COPY ./streaming-source-emulator/target/streaming-source-emulator.jar /opt/app
+WORKDIR /opt/app
+CMD ["java", "-jar", "/opt/app/streaming-source-emulator.jar"]

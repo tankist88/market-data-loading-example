@@ -5,6 +5,8 @@ echo "| START CONTAINERS |"
 echo "+------------------+"
 echo ""
 
+podman build -t market-data-loading-example_sse -f ./Dockerfile-sse .
+
 podman-compose up -d
 
 echo "+------------------+"
