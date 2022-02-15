@@ -9,7 +9,6 @@ public class MarketRecord {
     private double price;
     private int quantity;
     private double value;
-    private String type;
     private String buySell;
     private String tradingSession;
 
@@ -75,14 +74,6 @@ public class MarketRecord {
 
     public void setValue(double value) {
         this.value = value;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
     }
 
     public String getBuySell() {

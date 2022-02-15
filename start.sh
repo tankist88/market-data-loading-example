@@ -6,8 +6,38 @@ echo "+------------------+"
 echo ""
 
 podman build -t market-data-loading-example_sse -f ./Dockerfile-sse .
+podman build -t market-data-loading-example_mdl -f ./Dockerfile-mdl .
 
 podman-compose up -d
+
+echo "+------------------+"
+echo "| UPLOAD JARS      |"
+echo "+------------------+"
+echo ""
+
+SPARK_MASTER_CONTAINER=$(podman ps | grep _spark_ | awk '{print $1}')
+podman exec -it ${SPARK_MASTER_CONTAINER} mkdir /opt/app
+podman cp market-data-loader/target/market-data-loader-jar-with-dependencies.jar ${SPARK_MASTER_CONTAINER}:/opt/app
+podman cp market-data-loader/conf/log4j.properties ${SPARK_MASTER_CONTAINER}:/opt/app
+podman cp market-data-loader/conf/mdl.properties ${SPARK_MASTER_CONTAINER}:/opt/app
+echo "Spark Master (${SPARK_MASTER_CONTAINER}) /opt/app:"
+podman exec -it ${SPARK_MASTER_CONTAINER} ls -l /opt/app
+
+SPARK_WORKER_1_CONTAINER=$(podman ps | grep spark-worker-1 | awk '{print $1}')
+podman exec -it ${SPARK_WORKER_1_CONTAINER} mkdir /opt/app
+podman cp market-data-loader/target/market-data-loader-jar-with-dependencies.jar ${SPARK_WORKER_1_CONTAINER}:/opt/app
+podman cp market-data-loader/conf/log4j.properties ${SPARK_WORKER_1_CONTAINER}:/opt/app
+podman cp market-data-loader/conf/mdl.properties ${SPARK_WORKER_1_CONTAINER}:/opt/app
+echo "Spark Worker 1 (${SPARK_WORKER_1_CONTAINER}) /opt/app:"
+podman exec -it ${SPARK_WORKER_1_CONTAINER} ls -l /opt/app
+
+SPARK_WORKER_2_CONTAINER=$(podman ps | grep spark-worker-2 | awk '{print $1}')
+podman exec -it ${SPARK_WORKER_2_CONTAINER} mkdir /opt/app
+podman cp market-data-loader/target/market-data-loader-jar-with-dependencies.jar ${SPARK_WORKER_2_CONTAINER}:/opt/app
+podman cp market-data-loader/conf/log4j.properties ${SPARK_WORKER_2_CONTAINER}:/opt/app
+podman cp market-data-loader/conf/mdl.properties ${SPARK_WORKER_2_CONTAINER}:/opt/app
+echo "Spark Worker 2 (${SPARK_WORKER_2_CONTAINER}) /opt/app:"
+podman exec -it ${SPARK_WORKER_2_CONTAINER} ls -l /opt/app
 
 echo "+------------------+"
 echo "| INIT DATABASES   |"

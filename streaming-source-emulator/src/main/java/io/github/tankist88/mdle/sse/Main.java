@@ -7,18 +7,19 @@ import io.github.tankist88.mdle.sse.dto.MarketRecord;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.header.Header;
+import org.apache.kafka.common.header.internals.RecordHeader;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Main {
-    private static final Logger logger = LoggerFactory.getLogger(Main.class);
-
     private static final String PG_DB_HOST = "postgresql-tradesdb";
     private static final String PG_DB_PORT = "5432";
     private static final String PG_DB_NAME = "tradesdb";
@@ -34,16 +35,17 @@ public class Main {
             try (Statement stmt = conn.createStatement()) {
                 try (ResultSet rs = stmt.executeQuery("select * from DEAL LIMIT 10")) {
                     ObjectMapper mapper = createMapper();
-
-                    System.out.println("Query executed");
-
                     while (rs.next()) {
                         KafkaProducer<String, String> producer = createKafkaProducer(KAFKA_BOOTSTRAP_SERVERS);
                         StringWriter sw = new StringWriter();
                         mapper.writeValue(sw, createMarketRecord(rs));
                         String json = sw.toString();
-                        System.out.println(json);
-                        producer.send(new ProducerRecord<>(KAFKA_DEST_TOPIC, json));
+
+                        List<Header> headers = new ArrayList<>();
+
+                        headers.add(new RecordHeader("eventType", "MARKET_RECORD".getBytes(StandardCharsets.UTF_8)));
+
+                        producer.send(new ProducerRecord<>(KAFKA_DEST_TOPIC, null, null, null, json, headers));
                         producer.flush();
                         producer.close();
                     }
@@ -63,7 +65,6 @@ public class Main {
         record.setPrice(rs.getDouble("PRICE"));
         record.setQuantity(rs.getInt("QUANTITY"));
         record.setValue(rs.getDouble("VALUE"));
-        record.setType(rs.getString("TYPE"));
         record.setBuySell(rs.getString("BUYSELL"));
         record.setTradingSession(rs.getString("TRADINGSESSION"));
 
