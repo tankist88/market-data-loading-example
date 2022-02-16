@@ -6,4 +6,4 @@ COPY ./market-data-loader/conf/mdl.properties /opt/app
 COPY ./market-data-loader/shell/run.sh /opt/app
 RUN cd /opt/app
 WORKDIR /opt/app
-CMD ["./run.sh", "io.github.tankist88.mdle.mdl.load.MarketDataReader", "512m", "512m", "1", "client"]
+CMD ["./run.sh", "io.github.tankist88.mdle.mdl.task.load.MarketDataReader", "512m", "512m", "1", "client"]

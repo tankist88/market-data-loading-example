@@ -7,8 +7,12 @@ import org.apache.spark.sql.{DataFrame, SaveMode}
 import java.util.Properties
 
 object LoadUtils {
-  def createPgDbUrl(): String = {
+  def createServingDbUrl(): String = {
     "jdbc:postgresql://postgresql-servingdb:5432/servingdb?" + "user=serving_user&" + "password=password123"
+  }
+
+  def createTradesDbUrl(): String = {
+    "jdbc:postgresql://postgresql-tradesdb:5432/tradesdb?" + "user=trades_user&" + "password=password123"
   }
 
   def createMapper(): ObjectMapper = {
@@ -22,10 +26,10 @@ object LoadUtils {
   def saveTableFromDF(table: String, dataFrame: DataFrame): Unit = {
 
     val props = new Properties()
-    props.put("user", "serving_user")
-    props.put("password", "password123")
+//    props.put("user", "serving_user")
+//    props.put("password", "password123")
     props.put("driver", "org.postgresql.Driver")
 
-    dataFrame.write.mode(SaveMode.Overwrite).jdbc(createPgDbUrl(), table, props)
+    dataFrame.write.mode(SaveMode.Append).jdbc(createServingDbUrl(), table, props)
   }
 }

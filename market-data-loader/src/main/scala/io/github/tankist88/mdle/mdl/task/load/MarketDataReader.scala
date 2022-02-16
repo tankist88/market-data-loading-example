@@ -1,4 +1,4 @@
-package io.github.tankist88.mdle.mdl.load
+package io.github.tankist88.mdle.mdl.task.load
 
 import io.github.tankist88.mdle.mdl.dto.MarketRecord
 import io.github.tankist88.mdle.mdl.model.Candle

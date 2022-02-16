@@ -38,21 +38,18 @@ services:
     image: 'bitnami/grafana:latest'
     ports:
       - '3000:3000'
-    volumes:
-      - grafana-volume:/bitnami/grafana
+#    volumes:
+#      - grafana-volume:/opt/bitnami/grafana/data:rw
   influxdb:
-    image: 'bitnami/influxdb:latest'
+    image: 'bitnami/influxdb:1.8.5'
     environment:
-      - INFLUXDB_HTTP_AUTH_ENABLED=false
       - INFLUXDB_DB=market_data_load_monitoring
       - INFLUXDB_USER=market_monitoring
       - INFLUXDB_USER_PASSWORD=password123
-      - INFLUXDB_ADMIN_ENABLED=true
-      - INFLUXDB_ADMIN_USER=admin
-      - INFLUXDB_ADMIN_USER_PASSWORD=32sd33asd21df987as
-      - INFLUXDB_ADMIN_USER_TOKEN=dsfsdf1jdhadjan54skdnajsbd123jasbdjas
-    volumes:
-      - influxdb-volume:/bitnami/influxdb
+      - INFLUXDB_ADMIN_USER_PASSWORD=bitnami123
+      - INFLUXDB_ADMIN_USER_TOKEN=admintoken123
+#    volumes:
+#      - influxdb-volume:/bitnami/influxdb:rw
   spark:
     image: 'bitnami/spark:2.4.6'
     environment:
@@ -61,6 +58,7 @@ services:
       - SPARK_RPC_ENCRYPTION_ENABLED=no
       - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
       - SPARK_SSL_ENABLED=no
+      - SPARK_PUBLIC_DNS=localhost
     ports:
       - '8080:8080'
   spark-worker-1:
@@ -77,6 +75,7 @@ services:
       - SPARK_RPC_ENCRYPTION_ENABLED=no
       - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
       - SPARK_SSL_ENABLED=no
+      - SPARK_PUBLIC_DNS=localhost
     depends_on:
       - spark
   spark-worker-2:
@@ -93,6 +92,7 @@ services:
       - SPARK_RPC_ENCRYPTION_ENABLED=no
       - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
       - SPARK_SSL_ENABLED=no
+      - SPARK_PUBLIC_DNS=localhost
     depends_on:
       - spark
   sse:
@@ -106,18 +106,40 @@ services:
       - postgresql-tradesdb
       - kafka
       - spark
-      - spark-worker
+      - spark-worker-1
+      - spark-worker-2
   mdl:
     build:
       context: .
       dockerfile: Dockerfile-mdl
+    ports:
+      - '4041:4041'
     restart: on-failure
     depends_on:
       - sse
+      - postgresql-servingdb
+      - kafka
+      - spark
+      - spark-worker-1
+      - spark-worker-2
 
+  mdl-batch:
+    build:
+      context: .
+      dockerfile: Dockerfile-mdl-batch
+    ports:
+      - '4042:4042'
+    restart: on-failure
+    depends_on:
+      - postgresql-servingdb
+      - postgresql-tradesdb
+      - kafka
+      - spark
+      - spark-worker-1
+      - spark-worker-2
 
-volumes:
-  grafana-volume:
-    external: true
-  influxdb-volume:
-    external: true
+#volumes:
+#  grafana-volume:
+#    driver: local
+#  influxdb-volume:
+#    driver: local

@@ -1,6 +1,6 @@
 package io.github.tankist88.mdle.mdl.task
 
-import io.github.tankist88.mdle.mdl.load.{MarketDataReader, ProcessMarketDataLost}
+import io.github.tankist88.mdle.mdl.task.load.{MarketDataReader, ProcessMarketDataLost}
 
 object TaskDict extends Enumeration {
   type TaskType = Value

@@ -19,6 +19,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
+
 public class Main {
     private static final String PG_DB_HOST = "postgresql-tradesdb";
     private static final String PG_DB_PORT = "5432";
@@ -30,11 +32,16 @@ public class Main {
     private static final String KAFKA_DEST_TOPIC = "stock.data.pub";
 
     public static void main(String[] args) throws Exception {
+        SECONDS.sleep(20);
+
         Class.forName("org.postgresql.Driver");
         try (Connection conn = DriverManager.getConnection(createDbUrl())) {
             try (Statement stmt = conn.createStatement()) {
                 try (ResultSet rs = stmt.executeQuery("select * from DEAL LIMIT 10")) {
                     ObjectMapper mapper = createMapper();
+
+                    int counter = 0;
+
                     while (rs.next()) {
                         KafkaProducer<String, String> producer = createKafkaProducer(KAFKA_BOOTSTRAP_SERVERS);
                         StringWriter sw = new StringWriter();
@@ -48,6 +55,12 @@ public class Main {
                         producer.send(new ProducerRecord<>(KAFKA_DEST_TOPIC, null, null, null, json, headers));
                         producer.flush();
                         producer.close();
+
+                        counter++;
+
+                        if (counter % 100 == 0) {
+                            SECONDS.sleep(30);
+                        }
                     }
                 }
             }

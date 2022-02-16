@@ -3,7 +3,7 @@ package io.github.tankist88.mdle.mdl.task
 import io.github.tankist88.mdle.mdl.dto.monitoring.Point
 import io.github.tankist88.mdle.mdl.model.exception.LoadKafkaOffsetsException
 import io.github.tankist88.mdle.mdl.monitoring.InfluxClient
-import io.github.tankist88.mdle.mdl.utils.LoadUtils.createPgDbUrl
+import io.github.tankist88.mdle.mdl.utils.LoadUtils.createServingDbUrl
 import io.github.tankist88.mdle.mdl.utils.{KafkaSink, PropertyUtils}
 import org.apache.kafka.clients.consumer.{ConsumerConfig, ConsumerRecord, KafkaConsumer}
 import org.apache.kafka.common.TopicPartition
@@ -230,7 +230,7 @@ abstract class StreamingTask[T](implicit c: ClassTag[T]) extends Task {
     var connection: Connection = null
     var stmt: PreparedStatement = null
     try {
-      connection = DriverManager.getConnection(createPgDbUrl())
+      connection = DriverManager.getConnection(createServingDbUrl())
       connection.setAutoCommit(false)
       stmt = connection.prepareStatement(INSERT_STATE_QUERY)
       stmt.setString(1, getClass.getName)
@@ -253,7 +253,7 @@ abstract class StreamingTask[T](implicit c: ClassTag[T]) extends Task {
     var stmt: Statement = null
     var resultSet: ResultSet = null
     try {
-      connection = DriverManager.getConnection(createPgDbUrl())
+      connection = DriverManager.getConnection(createServingDbUrl())
 
       stmt = connection.createStatement()
 
@@ -280,7 +280,7 @@ abstract class StreamingTask[T](implicit c: ClassTag[T]) extends Task {
       var connection: Connection = null
       var stmt: PreparedStatement = null
       try {
-        connection = DriverManager.getConnection(createPgDbUrl())
+        connection = DriverManager.getConnection(createServingDbUrl())
         connection.setAutoCommit(false)
         stmt = connection.prepareStatement(INSERT_OFFSET_QUERY)
         stmt.setString(1, getClass.getName)
@@ -305,7 +305,7 @@ abstract class StreamingTask[T](implicit c: ClassTag[T]) extends Task {
     var stmt: Statement = null
     var resultSet: ResultSet = null
     try {
-      connection = DriverManager.getConnection(createPgDbUrl())
+      connection = DriverManager.getConnection(createServingDbUrl())
 
       stmt = connection.createStatement()
 

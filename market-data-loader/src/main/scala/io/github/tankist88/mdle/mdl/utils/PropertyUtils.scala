@@ -17,8 +17,10 @@ object PropertyUtils {
       val classPathRes = this.getClass.getClassLoader.getResourceAsStream(PROPERTY_FILE)
       if (classPathRes != null) {
         prop.load(classPathRes)
+      } else if (System.getProperty("mdl.config.path") != null) {
+        prop.load(new FileInputStream(System.getProperty("mdl.config.path")))
       } else {
-        prop.load(new FileInputStream("mdl.properties"))
+        prop.load(new FileInputStream(PROPERTY_FILE))
       }
       prop
     } catch {

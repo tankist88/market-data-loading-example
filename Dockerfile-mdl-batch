@@ -1,0 +1,20 @@
+FROM bitnami/spark:2.4.6
+
+USER root
+RUN apt-get update && apt-get -y install cron
+
+COPY ./market-data-loader/conf/mdl-cron /etc/cron.d
+RUN chmod 0644 /etc/cron.d/mdl-cron
+RUN crontab /etc/cron.d/mdl-cron
+RUN touch /var/log/cron.log
+
+RUN mkdir /opt/app
+COPY ./market-data-loader/target/market-data-loader-jar-with-dependencies.jar /opt/app
+COPY ./market-data-loader/conf/log4j.properties /opt/app
+COPY ./market-data-loader/conf/mdl.properties /opt/app
+COPY ./market-data-loader/shell/run-cron.sh /opt/app
+
+RUN cd /opt/app
+WORKDIR /opt/app
+
+CMD cron && tail -f /var/log/cron.log
