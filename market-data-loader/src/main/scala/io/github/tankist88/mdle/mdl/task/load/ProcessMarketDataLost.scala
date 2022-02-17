@@ -3,7 +3,7 @@ package io.github.tankist88.mdle.mdl.task.load
 import io.github.tankist88.mdle.mdl.dto.MarketRecord
 import io.github.tankist88.mdle.mdl.dto.task.DefaultTaskResult
 import io.github.tankist88.mdle.mdl.task.DefaultTask
-import io.github.tankist88.mdle.mdl.utils.LoadUtils.createTradesDbUrl
+import io.github.tankist88.mdle.mdl.utils.LoadUtils.{createTradesDbUrl, loadTableJdbc}
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.{Row, SQLContext}
 import org.apache.spark.sql.functions.{col, to_date}
@@ -21,22 +21,14 @@ class ProcessMarketDataLost extends DefaultTask {
 
       val prevDateStr = "2021-09-01"
 
-      val deals = sqlCtx.read
-        .format("jdbc")
-        .option("url", createTradesDbUrl())
-        .option("driver", "org.postgresql.Driver")
-        .option("dbtable", "DEAL")
-//        .option("user", "trades_user")
-//        .option("password", "password123")
-        .option("numPartitions", 10)
-        .load()
+      val deals = loadTableJdbc(sqlCtx, "DEAL", createTradesDbUrl())
         .where(to_date(col("TRADEDATE"), "dd.MM.yyyy") === prevDateStr)
         .rdd
         .map(createMarketRecord)
 
       val dealsCount = deals.cache().count()
 
-      new MarketDataReader().processMarketRdd(deals)
+      new MarketDataReader().processMarketRdd(deals, "CANDLES", "CANDLES_STREAM")
 
       deals.unpersist()
 

@@ -2,7 +2,7 @@ package io.github.tankist88.mdle.mdl.utils
 
 import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper, SerializationFeature}
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import org.apache.spark.sql.{DataFrame, SaveMode}
+import org.apache.spark.sql.{DataFrame, SQLContext, SaveMode}
 
 import java.util.Properties
 
@@ -23,13 +23,26 @@ object LoadUtils {
     objectMapper
   }
 
-  def saveTableFromDF(table: String, dataFrame: DataFrame): Unit = {
+  def loadTableJdbc(sqlCtx: SQLContext, table: String, url: String): DataFrame = {
+    sqlCtx.read
+      .format("jdbc")
+      .option("url", url)
+      .option("driver", "org.postgresql.Driver")
+      .option("dbtable", table)
+      .option("numPartitions", "10")
+      .option("fetchsize", "100")
+      .option("queryTimeout", "10")
+      .load()
+  }
 
-    val props = new Properties()
-//    props.put("user", "serving_user")
-//    props.put("password", "password123")
-    props.put("driver", "org.postgresql.Driver")
-
-    dataFrame.write.mode(SaveMode.Append).jdbc(createServingDbUrl(), table, props)
+  def saveTableFromDF(table: String, dataFrame: DataFrame, mode: SaveMode = SaveMode.Overwrite): Unit = {
+    dataFrame
+      .write
+      .mode(mode)
+      .option("numPartitions", "10")
+      .option("queryTimeout", "10")
+      .option("truncate", "true")
+      .option("driver", "org.postgresql.Driver")
+      .jdbc(createServingDbUrl(), table, new Properties())
   }
 }

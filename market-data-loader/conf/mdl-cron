@@ -1,2 +1,2 @@
-* * * * * /opt/app/run-cron.sh io.github.tankist88.mdle.mdl.task.load.ProcessMarketDataLost 512m 512m 1 client >> /var/log/cron.log 2>&1
+*/5 * * * * /opt/app/run-cron.sh io.github.tankist88.mdle.mdl.task.load.ProcessMarketDataLost 512m 512m 1 client >> /var/log/cron.log 2>&1
 # An empty line is required at the end of this file for a valid cron file.
