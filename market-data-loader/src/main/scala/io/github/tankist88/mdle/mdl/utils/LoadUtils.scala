@@ -4,8 +4,6 @@ import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper, Ser
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import org.apache.spark.sql.{DataFrame, SQLContext, SaveMode}
 
-import java.util.Properties
-
 object LoadUtils {
   def createServingDbUrl(): String = {
     "jdbc:postgresql://postgresql-servingdb:5432/servingdb?" + "user=serving_user&" + "password=password123"
@@ -35,14 +33,14 @@ object LoadUtils {
       .load()
   }
 
-  def saveTableFromDF(table: String, dataFrame: DataFrame, mode: SaveMode = SaveMode.Overwrite): Unit = {
+  def saveTableFromDF(table: String, dataFrame: DataFrame, mode: SaveMode): Unit = {
     dataFrame
       .write
+      .format("io.github.tankist88.spark.datasource.postgresql.ResolveConflictAppender")
       .mode(mode)
-      .option("numPartitions", "10")
-      .option("queryTimeout", "10")
-      .option("truncate", "true")
-      .option("driver", "org.postgresql.Driver")
-      .jdbc(createServingDbUrl(), table, new Properties())
+      .option("url", createServingDbUrl())
+      .option("tableName", table)
+      .option("keys", "DATETIME, TICKER")
+      .save()
   }
 }

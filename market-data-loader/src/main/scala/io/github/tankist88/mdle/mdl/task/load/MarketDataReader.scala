@@ -4,12 +4,11 @@ import io.github.tankist88.mdle.mdl.dto.MarketRecord
 import io.github.tankist88.mdle.mdl.model.Candle
 import io.github.tankist88.mdle.mdl.task.StreamingTask
 import io.github.tankist88.mdle.mdl.utils.KafkaSink
-import io.github.tankist88.mdle.mdl.utils.LoadUtils.{createMapper, createServingDbUrl, loadTableJdbc, saveTableFromDF}
+import io.github.tankist88.mdle.mdl.utils.LoadUtils.{createMapper, saveTableFromDF}
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.apache.spark.broadcast.Broadcast
 import org.apache.spark.rdd.RDD
-import org.apache.spark.sql.functions.col
-import org.apache.spark.sql.{DataFrame, SQLContext, SaveMode}
+import org.apache.spark.sql.{SQLContext, SaveMode}
 
 import java.text.SimpleDateFormat
 import java.util.{Calendar, Date}
@@ -44,7 +43,7 @@ class MarketDataReader extends StreamingTask[MarketRecord] {
 
   override def processRDD(rdd: RDD[MarketRecord], kafkaSink: Broadcast[KafkaSink]): Boolean = {
     try {
-      processMarketRdd(rdd, "CANDLES_STREAM")
+      processMarketRdd(rdd, "CANDLES")
       true
     } catch {
       case e: Throwable =>
@@ -53,56 +52,7 @@ class MarketDataReader extends StreamingTask[MarketRecord] {
     }
   }
 
-  def mergeCandleFrames(df1: DataFrame, df2: DataFrame): DataFrame = {
-    val oldData = df1
-      .withColumnRenamed("datetime", "old_datetime")
-      .withColumnRenamed("ticker", "old_ticker")
-      .withColumnRenamed("open", "old_open")
-      .withColumnRenamed("high", "old_high")
-      .withColumnRenamed("low", "old_low")
-      .withColumnRenamed("close", "old_close")
-      .withColumnRenamed("value", "old_value")
-
-    val newData = df2
-      .withColumnRenamed("datetime", "new_datetime")
-      .withColumnRenamed("ticker", "new_ticker")
-      .withColumnRenamed("open", "new_open")
-      .withColumnRenamed("high", "new_high")
-      .withColumnRenamed("low", "new_low")
-      .withColumnRenamed("close", "new_close")
-      .withColumnRenamed("value", "new_value")
-      .join(
-        oldData,
-        col("new_datetime") === col("old_datetime") && col("new_ticker") === col("old_ticker"),
-        "full_outer"
-      )
-
-    val newPart = newData
-      .where(col("new_datetime").isNotNull && col("new_ticker").isNotNull)
-      .withColumnRenamed("new_datetime", "datetime")
-      .withColumnRenamed("new_ticker", "ticker")
-      .withColumnRenamed("new_open", "open")
-      .withColumnRenamed("new_high", "high")
-      .withColumnRenamed("new_low", "low")
-      .withColumnRenamed("new_close", "close")
-      .withColumnRenamed("new_value", "value")
-      .select("datetime", "ticker", "open", "high", "low", "close", "value")
-
-    val oldPart = newData
-      .where(col("new_datetime").isNull && col("new_ticker").isNull)
-      .withColumnRenamed("old_datetime", "datetime")
-      .withColumnRenamed("old_ticker", "ticker")
-      .withColumnRenamed("old_open", "open")
-      .withColumnRenamed("old_high", "high")
-      .withColumnRenamed("old_low", "low")
-      .withColumnRenamed("old_close", "close")
-      .withColumnRenamed("old_value", "value")
-      .select("datetime", "ticker", "open", "high", "low", "close", "value")
-
-    oldPart.union(newPart)
-  }
-
-  def processMarketRdd(rdd: RDD[MarketRecord], tableMain: String, tableShort: String = null): Unit = {
+  def processMarketRdd(rdd: RDD[MarketRecord], table: String): Unit = {
     val sqlCtx = SQLContext.getOrCreate(rdd.sparkContext)
 
     val candleRdd = rdd
@@ -119,18 +69,7 @@ class MarketDataReader extends StreamingTask[MarketRecord] {
       .sortBy(f => f._1._1.getTime)
       .flatMap(row => row._2)
 
-    val mergedMainData = mergeCandleFrames(
-      loadTableJdbc(sqlCtx, tableMain, createServingDbUrl()),
-      sqlCtx.createDataFrame(candleRdd, classOf[Candle])
-    )
-
-    if (tableShort != null) {
-      val shortData = loadTableJdbc(sqlCtx, tableShort, createServingDbUrl())
-      val mergedShortData = mergeCandleFrames(mergedMainData, shortData)
-      saveTableFromDF(tableMain, mergedShortData, SaveMode.Overwrite)
-    } else {
-      saveTableFromDF(tableMain, mergedMainData, SaveMode.Overwrite)
-    }
+    saveTableFromDF(table, sqlCtx.createDataFrame(candleRdd, classOf[Candle]), SaveMode.Append)
   }
 
   private def createTimeBasedKey(row: MarketRecord): (Date, String, String, Int) = {

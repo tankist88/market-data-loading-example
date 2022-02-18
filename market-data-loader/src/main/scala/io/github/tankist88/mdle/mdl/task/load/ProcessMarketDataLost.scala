@@ -28,7 +28,7 @@ class ProcessMarketDataLost extends DefaultTask {
 
       val dealsCount = deals.cache().count()
 
-      new MarketDataReader().processMarketRdd(deals, "CANDLES", "CANDLES_STREAM")
+      new MarketDataReader().processMarketRdd(deals, "CANDLES")
 
       deals.unpersist()
 
